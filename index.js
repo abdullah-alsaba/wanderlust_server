@@ -2,10 +2,12 @@ const dns = require("node:dns");
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 require("dotenv").config();
+const cors= require('cors')
 const express = require("express");
 const app = express();
+app.use(cors())
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const port = 7000;
+const port = process.env.PORT;
 
 const uri = process.env.MONGODB_URI;
 
@@ -19,7 +21,17 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
+    const db = client.db("wonderDB");
+    const destinationCollection = db.collection("destination");
+
+    app.post("/destination",async (req, res) => {
+      const destinationData = req.body;
+      const result = await destinationCollection.insertOne(destinationData)
+      res.send(result)
+
+      console.log(destinationData)
+    });
+
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -33,9 +45,6 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.get("/", (req, res) => {
-  res.send("connected to server");
-});
 
 app.listen(port, () => {
   console.log(`Server running in ${port}`);
