@@ -4,8 +4,16 @@ dns.setServers(["8.8.8.8", "8.8.4.4"]);
 require("dotenv").config();
 const cors= require('cors')
 const express = require("express");
+
+
+
+
 const app = express();
 app.use(cors())
+app.use(express.json())
+
+
+
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const port = process.env.PORT;
 
@@ -40,7 +48,7 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
