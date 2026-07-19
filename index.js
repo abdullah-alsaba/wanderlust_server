@@ -14,7 +14,7 @@ app.use(express.json())
 
 
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT;
 
 const uri = process.env.MONGODB_URI;
@@ -31,6 +31,17 @@ async function run() {
   try {
     const db = client.db("wonderDB");
     const destinationCollection = db.collection("destination");
+
+
+    app.get('/destination', async (req, res) => {
+      const result = await destinationCollection.find().toArray()
+      res.send(result)
+    })
+    app.get('/destination/:id', async (req, res) => {
+      const {id} = req.params
+      const result = await destinationCollection.findOne({_id: new ObjectId(id)})
+      res.send(result)
+})
 
     app.post("/destination",async (req, res) => {
       const destinationData = req.body;
